@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  CLIENT
+}
+
+enum VariableType {
+  SLIDER
+  CHECKBOX
+  TEXT
+  IMAGE
+  SELECT
+  COLOR
+}
+
+enum JobStatus {
+  PENDING
+  DOWNLOADING
+  RENDERING
+  UPLOADING
+  COMPLETED
+  FAILED
+  MANUAL
+}
+
+// ─── User & Organization ─────────────────────────────────
+
+model User {
+  id             String               @id @default(cuid())
+  email          String               @unique
+  name           String?
+  passwordHash   String
+  role           UserRole             @default(CLIENT)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  memberships    OrganizationMember[]
+  renderJobs     RenderJob[]
+
+  @@map("users")
+}
+
+model Organization {
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  members     OrganizationMember[]
+  templates   Template[]
+  renderJobs  RenderJob[]
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  role           UserRole     @default(CLIENT)
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@map("organization_members")
+}
+
+// ─── Template ────────────────────────────────────────────
+
+model Template {
+  id              String             @id @default(cuid())
+  name            String
+  description     String?
+  organizationId  String
+  aepFileUrl      String?
+  aepFileName     String?
+  aepFileSize     Int?
+  exportCompName  String             @default("___Fotbal_Chance_export")
+  controlCompName String?
+  thumbnailUrl    String?
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  variables       TemplateVariable[]
+  footageSlots    FootageSlot[]
+  renderJobs      RenderJob[]
+
+  @@map("templates")
+}
+
+model TemplateVariable {
+  id           String       @id @default(cuid())
+  templateId   String
+  layerName    String
+  effectName   String
+  effectType   String       @default("Slider")
+  type         VariableType @default(SLIDER)
+  label        String
+  groupName    String?
+  validation   Json?
+  defaultValue String?
+  sortOrder    Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  template     Template     @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("template_variables")
+}
+
+model FootageSlot {
+  id              String   @id @default(cuid())
+  templateId      String
+  footageItemName String
+  folderPath      String
+  label           String
+  allowedFormats  String[] @default(["png", "jpg", "ai", "psd"])
+  maxFileSize     Int      @default(10485760)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  template        Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("footage_slots")
+}
+
+// ─── Render Job ──────────────────────────────────────────
+
+model RenderJob {
+  id             String       @id @default(cuid())
+  templateId     String
+  organizationId String
+  createdById    String
+  status         JobStatus    @default(PENDING)
+  priority       Int          @default(0)
+  progress       Int          @default(0)
+  agentId        String?
+  outputMp4Url   String?
+  outputAepUrl   String?
+  errorMessage   String?
+  retryCount     Int          @default(0)
+  maxRetries     Int          @default(3)
+  jobName        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  startedAt      DateTime?
+  completedAt    DateTime?
+  template       Template     @relation(fields: [templateId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdBy      User         @relation(fields: [createdById], references: [id])
+  agent          RenderAgent? @relation(fields: [agentId], references: [id])
+  jobData        JobData[]
+  jobAssets       JobAsset[]
+
+  @@index([status, priority, createdAt])
+  @@map("render_jobs")
+}
+
+model JobData {
+  id          String    @id @default(cuid())
+  jobId       String
+  key         String
+  value       String
+  layerName   String?
+  effectName  String?
+  effectType  String?
+  createdAt   DateTime  @default(now())
+  job         RenderJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, key])
+  @@map("job_data")
+}
+
+model JobAsset {
+  id              String    @id @default(cuid())
+  jobId           String
+  footageSlotId   String?
+  fileName        String
+  originalName    String
+  fileUrl         String
+  fileSize        Int
+  mimeType        String
+  footageItemName String?
+  folderPath      String?
+  createdAt       DateTime  @default(now())
+  job             RenderJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_assets")
+}
+
+// ─── Render Agent ────────────────────────────────────────
+
+model RenderAgent {
+  id            String      @id @default(cuid())
+  name          String
+  apiKey        String      @unique
+  hostname      String?
+  status        String      @default("offline")
+  lastHeartbeat DateTime?
+  currentJobId  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  jobs          RenderJob[]
+
+  @@map("render_agents")
+}
