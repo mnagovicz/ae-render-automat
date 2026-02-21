@@ -3,10 +3,17 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { UserRole } from "@/generated/prisma/client";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const addMemberSchema = z.object({
   email: z.string().email("Invalid email address"),
-  role: z.nativeEnum(UserRole).default(UserRole.CLIENT),
+  name: z.string().min(1, "Name is required"),
+  password: z.string().min(6).optional(),
+});
+
+const deleteMemberSchema = z.object({
+  userId: z.string().min(1, "User ID is required"),
 });
 
 // GET /api/organizations/[id]/members - List members of an organization
@@ -55,7 +62,7 @@ export async function GET(
   return NextResponse.json(members);
 }
 
-// POST /api/organizations/[id]/members - Add a member to an organization
+// POST /api/organizations/[id]/members - Add a member (auto-creates user if needed)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -88,7 +95,7 @@ export async function POST(
     );
   }
 
-  const { email, role } = parsed.data;
+  const { email, name, password } = parsed.data;
 
   // Check the organization exists
   const organization = await prisma.organization.findUnique({
@@ -102,16 +109,29 @@ export async function POST(
     );
   }
 
-  // Find the user by email
-  const user = await prisma.user.findUnique({
+  // Find or create the user
+  let user = await prisma.user.findUnique({
     where: { email },
   });
 
+  let generatedPassword: string | null = null;
+  let userCreated = false;
+
   if (!user) {
-    return NextResponse.json(
-      { error: "No user found with this email address" },
-      { status: 404 }
-    );
+    const plainPassword = password || crypto.randomBytes(10).toString("base64url");
+    const passwordHash = await bcrypt.hash(plainPassword, 12);
+
+    user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        passwordHash,
+        role: UserRole.CLIENT,
+      },
+    });
+
+    generatedPassword = plainPassword;
+    userCreated = true;
   }
 
   // Check if the user is already a member
@@ -135,7 +155,7 @@ export async function POST(
     data: {
       userId: user.id,
       organizationId: id,
-      role,
+      role: UserRole.CLIENT,
     },
     include: {
       user: {
@@ -149,5 +169,70 @@ export async function POST(
     },
   });
 
-  return NextResponse.json(member, { status: 201 });
+  return NextResponse.json(
+    {
+      ...member,
+      userCreated,
+      generatedPassword,
+    },
+    { status: 201 }
+  );
+}
+
+// DELETE /api/organizations/[id]/members - Remove a member from an organization
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { id } = await params;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const parsed = deleteMemberSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Validation failed", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const { userId } = parsed.data;
+
+  const membership = await prisma.organizationMember.findUnique({
+    where: {
+      userId_organizationId: {
+        userId,
+        organizationId: id,
+      },
+    },
+  });
+
+  if (!membership) {
+    return NextResponse.json(
+      { error: "Member not found" },
+      { status: 404 }
+    );
+  }
+
+  await prisma.organizationMember.delete({
+    where: { id: membership.id },
+  });
+
+  return NextResponse.json({ success: true });
 }

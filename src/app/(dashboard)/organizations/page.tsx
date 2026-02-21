@@ -3,6 +3,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
+import Link from "next/link";
 import { Plus, Trash2, Building2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -230,7 +231,14 @@ export default function OrganizationsPage() {
             <TableBody>
               {organizations?.map((org) => (
                 <TableRow key={org.id}>
-                  <TableCell className="font-medium">{org.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/organizations/${org.id}`}
+                      className="hover:underline"
+                    >
+                      {org.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{org.slug}</Badge>
                   </TableCell>

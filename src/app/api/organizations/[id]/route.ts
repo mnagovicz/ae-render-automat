@@ -50,7 +50,7 @@ export async function GET(
         orderBy: { createdAt: "desc" },
       },
       _count: {
-        select: { members: true },
+        select: { members: true, templates: true },
       },
     },
   });
