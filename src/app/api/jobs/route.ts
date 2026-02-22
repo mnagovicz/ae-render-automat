@@ -7,8 +7,12 @@ const createJobSchema = z.object({
   templateId: z.string().min(1),
   organizationId: z.string().min(1),
   jobName: z.string().optional(),
+  dueDate: z.string().optional(),
+  broadcastDate: z.string().optional(),
   priority: z.number().default(0),
   data: z.record(z.string(), z.string()),
+  draft: z.boolean().default(false),
+  deliveryDestinationId: z.string().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -66,9 +70,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { templateId, organizationId, jobName, priority, data } = parsed.data;
+  const { templateId, organizationId, jobName, dueDate, broadcastDate, priority, data, draft, deliveryDestinationId } = parsed.data;
 
-  const status = session.user.role === "CLIENT" ? "AWAITING_APPROVAL" : "PENDING";
+  const status = draft ? "DRAFT" : (session.user.role === "CLIENT" ? "AWAITING_APPROVAL" : "PENDING");
 
   const job = await prisma.renderJob.create({
     data: {
@@ -77,7 +81,10 @@ export async function POST(req: NextRequest) {
       createdById: session.user.id,
       status,
       jobName,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      broadcastDate: broadcastDate ? new Date(broadcastDate) : undefined,
       priority,
+      deliveryDestinationId: deliveryDestinationId || undefined,
       jobData: {
         create: Object.entries(data).map(([key, value]) => ({
           key,

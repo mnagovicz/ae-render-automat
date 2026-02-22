@@ -14,38 +14,61 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/lib/i18n";
 import { Save, Send } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-export default function PortalOrderPage() {
-  const { templateId } = useParams<{ templateId: string }>();
+export default function EditDraftPage() {
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { data: template } = useSWR(`/api/templates/${templateId}`, fetcher);
+  const { data: job } = useSWR(`/api/jobs/${id}`, fetcher);
+  const templateId = job?.templateId;
   const { data: templateDeliveries } = useSWR(
-    `/api/templates/${templateId}/deliveries`,
+    templateId ? `/api/templates/${templateId}/deliveries` : null,
     fetcher
   );
-  const [loading, setLoading] = useState(false);
-  const [jobName, setJobName] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [broadcastDate, setBroadcastDate] = useState("");
-  const [deliveryDestinationId, setDeliveryDestinationId] = useState("");
-  const { t } = useTranslation();
-  const draftRef = useRef(false);
 
   const clientDeliveries = (templateDeliveries || []).filter(
     (td: { clientVisible: boolean; deliveryDestination: { isActive: boolean } }) =>
       td.clientVisible && td.deliveryDestination?.isActive
   );
+  const [loading, setLoading] = useState(false);
+  const [jobName, setJobName] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [broadcastDate, setBroadcastDate] = useState("");
+  const [ready, setReady] = useState(false);
+  const [deliveryDestinationId, setDeliveryDestinationId] = useState("");
+  const { t } = useTranslation();
+  const submitRef = useRef(false);
+
+  useEffect(() => {
+    if (job && !ready) {
+      if (job.status !== "DRAFT") {
+        router.replace("/portal/orders");
+        return;
+      }
+      setJobName(job.jobName || "");
+      if (job.dueDate) setDueDate(job.dueDate.slice(0, 16));
+      if (job.broadcastDate) setBroadcastDate(job.broadcastDate.slice(0, 16));
+      if (job.deliveryDestinationId) setDeliveryDestinationId(job.deliveryDestinationId);
+      setReady(true);
+    }
+  }, [job, ready, router, id]);
+
+  const defaultValues: Record<string, string> = {};
+  if (job?.jobData) {
+    for (const d of job.jobData) {
+      defaultValues[d.key] = d.value;
+    }
+  }
 
   async function handleSubmit(
     data: Record<string, string>,
     files: Record<string, File>
   ) {
-    const isDraft = draftRef.current;
+    const isSubmit = submitRef.current;
     setLoading(true);
     try {
       const fileUploads: Record<string, string> = {};
@@ -70,44 +93,43 @@ export default function PortalOrderPage() {
         fileUploads[slotId] = key;
       }
 
-      const res = await fetch("/api/jobs", {
-        method: "POST",
+      const res = await fetch(`/api/jobs/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          templateId,
-          organizationId: template.organizationId,
           jobName: jobName || undefined,
-          dueDate: dueDate || undefined,
-          broadcastDate: broadcastDate || undefined,
+          dueDate: dueDate || null,
+          broadcastDate: broadcastDate || null,
           data: { ...data, ...fileUploads },
-          draft: isDraft,
-          deliveryDestinationId: deliveryDestinationId || undefined,
+          submit: isSubmit,
+          deliveryDestinationId: deliveryDestinationId || null,
         }),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to create order");
+        throw new Error("Failed to update draft");
       }
 
-      const job = await res.json();
-      toast.success(isDraft ? t("toast.draftSaved") : t("toast.orderCreated"));
+      toast.success(isSubmit ? t("toast.orderCreated") : t("toast.draftSaved"));
       router.push("/portal/orders");
     } catch {
-      toast.error(t("toast.orderCreateFailed"));
+      toast.error(t("toast.draftSaveFailed"));
     }
     setLoading(false);
   }
 
-  if (!template) {
-    return <div>{t("portal.order.loadingTemplate")}</div>;
+  if (!job || !ready) {
+    return <div>{t("common.loading")}</div>;
   }
+
+  const template = job.template;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("portal.order.title")}</h1>
+        <h1 className="text-2xl font-bold">{t("portal.order.editDraft")}</h1>
         <p className="text-muted-foreground">
-          {t("portal.order.template")}: {template.name}
+          {t("portal.order.template")}: {template?.name}
         </p>
       </div>
 
@@ -159,31 +181,32 @@ export default function PortalOrderPage() {
       )}
 
       <DynamicForm
-        variables={template.variables || []}
-        footageSlots={template.footageSlots || []}
+        variables={template?.variables || []}
+        footageSlots={template?.footageSlots || []}
         onSubmit={handleSubmit}
         loading={loading}
         clientMode
         hideSubmitButton
-        formId="order-form"
+        defaultValues={defaultValues}
+        formId="edit-draft-form"
       />
 
       <div className="flex gap-3">
         <Button
           type="submit"
-          form="order-form"
+          form="edit-draft-form"
           variant="outline"
           disabled={loading}
-          onClick={() => { draftRef.current = true; }}
+          onClick={() => { submitRef.current = false; }}
         >
           <Save className="mr-2 h-4 w-4" />
-          {t("portal.order.saveDraft")}
+          {t("portal.order.saveChanges")}
         </Button>
         <Button
           type="submit"
-          form="order-form"
+          form="edit-draft-form"
           disabled={loading}
-          onClick={() => { draftRef.current = false; }}
+          onClick={() => { submitRef.current = true; }}
         >
           <Send className="mr-2 h-4 w-4" />
           {t("portal.order.submit")}

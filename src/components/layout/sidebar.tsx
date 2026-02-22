@@ -11,6 +11,7 @@ import {
   Server,
   Plus,
   ClipboardCheck,
+  Send,
 } from "lucide-react";
 import { UserRole } from "@/generated/prisma/client";
 import { useTranslation } from "@/lib/i18n";
@@ -25,6 +26,7 @@ const navigation = [
   { key: "nav.jobs", href: "/jobs", icon: FileVideo, roles: ["ADMIN", "OPERATOR"] },
   { key: "nav.newJob", href: "/jobs/new", icon: Plus, roles: ["ADMIN"] },
   { key: "nav.templates", href: "/templates", icon: Layers, roles: ["ADMIN", "OPERATOR"] },
+  { key: "nav.deliveries", href: "/deliveries", icon: Send, roles: ["ADMIN"] },
   { key: "nav.organizations", href: "/organizations", icon: Building2, roles: ["ADMIN"] },
   { key: "nav.agents", href: "/agents", icon: Server, roles: ["ADMIN"] },
 ];
