@@ -26,6 +26,8 @@ import {
   Trash2,
   GripVertical,
   Send,
+  Upload,
+  Music,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import {
@@ -862,6 +864,73 @@ export default function TemplateEditorPage() {
                           }
                           placeholder="-"
                         />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("templates.editor.startFrame")}</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={(v.validation as Record<string, number> | null)?.startFrame ?? ""}
+                          onChange={(e) =>
+                            updateVariable(i, {
+                              validation: {
+                                ...((v.validation as Record<string, unknown>) || {}),
+                                startFrame: parseInt(e.target.value) || undefined,
+                              },
+                            })
+                          }
+                          placeholder={t("templates.editor.startFrameHint")}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("templates.editor.backgroundAudio")}</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            accept=".wav"
+                            className="h-9"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const presignRes = await fetch("/api/files", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({
+                                    fileName: file.name,
+                                    contentType: file.type || "audio/wav",
+                                    action: "upload",
+                                  }),
+                                });
+                                const { url, key } = await presignRes.json();
+                                await fetch(url, {
+                                  method: "PUT",
+                                  body: file,
+                                  headers: { "Content-Type": file.type || "audio/wav" },
+                                });
+                                updateVariable(i, {
+                                  validation: {
+                                    ...((v.validation as Record<string, unknown>) || {}),
+                                    backgroundAudioUrl: key,
+                                    backgroundAudioName: file.name,
+                                  },
+                                });
+                                toast.success(t("toast.wavUploaded"));
+                              } catch {
+                                toast.error(t("toast.templateSaveFailed"));
+                              }
+                            }}
+                          />
+                        </div>
+                        {(v.validation as Record<string, string> | null)?.backgroundAudioName && (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <Music className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {(v.validation as Record<string, string>).backgroundAudioName}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </>
                   )}

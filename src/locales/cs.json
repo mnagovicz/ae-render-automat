@@ -147,6 +147,10 @@
   "templates.editor.charsPerSecond": "Znaku/s",
   "templates.editor.maxChars": "Max znaku",
   "templates.editor.maxDuration": "Delka/s",
+  "templates.editor.startFrame": "Start frame",
+  "templates.editor.startFrameHint": "Frame ve spotu, kde zacne voiceover",
+  "templates.editor.backgroundAudio": "Zvukovy podkres",
+  "templates.editor.uploadWav": "Nahrat WAV",
   "templates.editor.noFonts": "Zadne fonty nalezeny.",
 
   "orgs.title": "Organizace",
@@ -327,6 +331,7 @@
   "toast.deliverySaveFailed": "Nepodarilo se ulozit misto doruceni",
   "toast.deliveryConfigSaved": "Konfigurace doruceni ulozena",
   "toast.deliveryConfigSaveFailed": "Nepodarilo se ulozit konfiguraci doruceni",
+  "toast.wavUploaded": "Zvukovy podkres nahran",
 
   "orgDetail.backToOrgs": "Zpet na organizace",
   "orgDetail.members": "clenu",

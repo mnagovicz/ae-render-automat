@@ -147,6 +147,10 @@
   "templates.editor.charsPerSecond": "Chars/s",
   "templates.editor.maxChars": "Max chars",
   "templates.editor.maxDuration": "Max duration/s",
+  "templates.editor.startFrame": "Start frame",
+  "templates.editor.startFrameHint": "Frame in the spot where voiceover starts",
+  "templates.editor.backgroundAudio": "Background audio",
+  "templates.editor.uploadWav": "Upload WAV",
   "templates.editor.noFonts": "No fonts found.",
 
   "orgs.title": "Organizations",
@@ -327,6 +331,7 @@
   "toast.deliverySaveFailed": "Failed to save delivery destination",
   "toast.deliveryConfigSaved": "Delivery configuration saved",
   "toast.deliveryConfigSaveFailed": "Failed to save delivery configuration",
+  "toast.wavUploaded": "Background audio uploaded",
 
   "orgDetail.backToOrgs": "Back to Organizations",
   "orgDetail.members": "members",
