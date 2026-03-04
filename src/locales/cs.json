@@ -78,6 +78,9 @@
   "jobs.detail.toManual": "Manualni vyroba",
   "jobs.detail.rerenderWithEdit": "Upravit data a re-renderovat",
   "jobs.detail.confirmRerender": "Ulozit a re-renderovat",
+  "jobs.detail.uploadVideo": "Nahrat hotove video",
+  "jobs.detail.uploading": "Nahrava se...",
+  "jobs.detail.manualComplete": "Dokoncit",
 
   "jobs.create.title": "Vytvorit render ulohu",
   "jobs.create.template": "Sablona",
@@ -225,6 +228,7 @@
   "toast.jobApproved": "Uloha schvalena",
   "toast.jobRejected": "Uloha odmitnuta",
   "toast.jobToManual": "Uloha presunuta na manualni vyrobu",
+  "toast.manualVideoUploaded": "Video nahrano a uloha dokoncena",
   "toast.jobRequeued": "Uloha znovu zarazena",
   "toast.jobCreated": "Uloha uspesne vytvorena",
   "toast.jobCreateFailed": "Nepodarilo se vytvorit ulohu",

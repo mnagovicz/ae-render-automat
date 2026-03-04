@@ -248,21 +248,38 @@ export default function TemplateEditorPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    try {
+      // 1. Get presigned URL
+      const presignRes = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, contentType: "application/octet-stream", action: "upload" }),
+      });
+      const { url, key } = await presignRes.json();
 
-    await fetch(`/api/templates/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        aepFileName: file.name,
-        aepFileSize: file.size,
-      }),
-    });
+      // 2. Upload file to S3
+      await fetch(url, { method: "PUT", body: file, headers: { "Content-Type": "application/octet-stream" } });
 
-    (window as unknown as Record<string, File>).__aepFile = file;
+      // 3. Save metadata + S3 key to DB
+      await fetch(`/api/templates/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          aepFileUrl: key,
+          aepFileName: file.name,
+          aepFileSize: file.size,
+        }),
+      });
 
+      // Keep reference for analyze function
+      (window as unknown as Record<string, File>).__aepFile = file;
+
+      mutateTemplate();
+      toast.success(t("toast.uploaded", { name: file.name }));
+    } catch {
+      toast.error(t("toast.templateSaveFailed"));
+    }
     setUploading(false);
-    mutateTemplate();
-    toast.success(t("toast.uploaded", { name: file.name }));
   }
 
   async function handleAnalyze() {

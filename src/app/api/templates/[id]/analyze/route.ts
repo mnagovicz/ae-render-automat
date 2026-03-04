@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { analyzeAep } from "@/lib/aep-analyzer";
+import { downloadFromS3 } from "@/lib/s3";
 
 // ─── POST /api/templates/[id]/analyze ───────────────────
 // Analyzes an AEP file associated with a template.
@@ -48,17 +49,9 @@ export async function POST(
   let aepBuffer: Buffer;
 
   try {
-    // Strategy 1: If the template has an S3 URL, download it
+    // Strategy 1: If the template has an S3 key, download it
     if (template.aepFileUrl) {
-      const response = await fetch(template.aepFileUrl);
-      if (!response.ok) {
-        return NextResponse.json(
-          { error: `Failed to download AEP file: ${response.statusText}` },
-          { status: 502 }
-        );
-      }
-      const arrayBuffer = await response.arrayBuffer();
-      aepBuffer = Buffer.from(arrayBuffer);
+      aepBuffer = await downloadFromS3(template.aepFileUrl);
     }
     // Strategy 2: Accept file upload via FormData
     else {

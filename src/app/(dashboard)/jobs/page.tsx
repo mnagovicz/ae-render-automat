@@ -23,7 +23,9 @@ import {
 import { JobStatusBadge } from "@/components/jobs/job-status-badge";
 import { DynamicForm } from "@/components/dynamic-form/dynamic-form";
 import { Progress } from "@/components/ui/progress";
-import { Plus, ChevronDown, Download, CheckCircle, XCircle, Wrench, Edit3 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, ChevronDown, Download, Upload, CheckCircle, XCircle, Wrench, Edit3 } from "lucide-react";
 import { toast } from "sonner";
 import { format, formatDistanceToNow } from "date-fns";
 import { useTranslation } from "@/lib/i18n";
@@ -124,6 +126,38 @@ function ExpandedRow({ jobId, onMutate }: { jobId: string; onMutate?: () => void
     }
   }
 
+  async function handleManualUpload(file: File) {
+    setActionLoading("upload");
+    try {
+      // 1. Get presigned URL
+      const presignRes = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, contentType: file.type, action: "upload" }),
+      });
+      const { url, key } = await presignRes.json();
+
+      // 2. Upload file to S3
+      await fetch(url, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+
+      // 3. Save URL and complete job
+      const res = await fetch(`/api/jobs/${jobId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ outputMp4Url: key, status: "COMPLETED", completedAt: new Date().toISOString() }),
+      });
+
+      if (res.ok) {
+        toast.success(t("toast.manualVideoUploaded"));
+        mutateJob();
+        onMutate?.();
+      }
+    } catch {
+      toast.error("Upload failed");
+    }
+    setActionLoading(null);
+  }
+
   return (
     <TableRow>
       <TableCell colSpan={8} className="bg-muted/30 p-0">
@@ -164,6 +198,11 @@ function ExpandedRow({ jobId, onMutate }: { jobId: string; onMutate?: () => void
                 </Button>
               </>
             )}
+            {job.status === "MANUAL" && (job.outputAepUrl || job.template?.aepFileUrl) && (
+              <Button size="sm" variant="outline" onClick={() => handleDownload(job.outputAepUrl || job.template.aepFileUrl, `${job.jobName || job.id}.aep`)}>
+                <Download className="mr-2 h-3 w-3" /> {t("jobs.detail.downloadAep")}
+              </Button>
+            )}
             {(job.status === "COMPLETED" || job.status === "REVIEW") && job.outputMp4Url && (
               <Button size="sm" variant="outline" onClick={() => handleDownload(job.outputMp4Url, `${job.jobName || job.id}.mp4`)}>
                 <Download className="mr-2 h-3 w-3" /> {t("jobs.detail.downloadMp4")}
@@ -187,6 +226,29 @@ function ExpandedRow({ jobId, onMutate }: { jobId: string; onMutate?: () => void
                 loading={actionLoading === "rerender"}
                 submitLabel={t("jobs.detail.confirmRerender")}
               />
+            </div>
+          )}
+          {job.status === "MANUAL" && (
+            <div className="border-t pt-3">
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+              <div className="flex items-end gap-3" onClick={(e) => e.stopPropagation()}>
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-muted-foreground">{t("jobs.detail.uploadVideo")}</Label>
+                  <Input
+                    type="file"
+                    accept=".mp4"
+                    className="h-9 w-64"
+                    disabled={actionLoading === "upload"}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleManualUpload(file);
+                    }}
+                  />
+                </div>
+                {actionLoading === "upload" && (
+                  <span className="text-sm text-muted-foreground">{t("jobs.detail.uploading")}</span>
+                )}
+              </div>
             </div>
           )}
         </div>
