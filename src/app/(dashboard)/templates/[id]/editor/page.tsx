@@ -383,6 +383,7 @@ export default function TemplateEditorPage() {
     setSaving(true);
     try {
       const cleanVariables = variables.map((v) => ({
+        id: v.id || undefined,
         layerName: v.layerName,
         effectName: v.effectName,
         effectType: v.effectType,
@@ -401,6 +402,7 @@ export default function TemplateEditorPage() {
       const cleanSlots = footageSlots
         .filter((s) => s.footageItemName && s.label)
         .map((s) => ({
+          id: s.id || undefined,
           footageItemName: s.footageItemName,
           folderPath: s.folderPath,
           label: s.label,

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const slotSchema = z.object({
+  id: z.string().uuid().optional(),
   footageItemName: z.string().min(1),
   folderPath: z.string().default(""),
   label: z.string().min(1),
@@ -53,18 +54,35 @@ export async function PUT(
   }
 
   try {
-    await prisma.$transaction([
-      prisma.footageSlot.deleteMany({ where: { templateId: id } }),
-      ...parsed.data.slots.map((s, i) =>
-        prisma.footageSlot.create({
-          data: {
-            ...s,
-            templateId: id,
-            sortOrder: s.sortOrder ?? i,
-          },
-        })
-      ),
-    ]);
+    const incoming = parsed.data.slots;
+    const existingIds = incoming.map((s) => s.id).filter(Boolean) as string[];
+
+    await prisma.$transaction(async (tx: typeof prisma) => {
+      // Delete slots that are no longer in the list
+      await tx.footageSlot.deleteMany({
+        where: {
+          templateId: id,
+          id: { notIn: existingIds },
+        },
+      });
+
+      // Upsert each slot to preserve IDs
+      for (let i = 0; i < incoming.length; i++) {
+        const { id: slotId, ...data } = incoming[i];
+        const slotData = { ...data, templateId: id, sortOrder: data.sortOrder ?? i };
+
+        if (slotId) {
+          await tx.footageSlot.update({
+            where: { id: slotId },
+            data: slotData,
+          });
+        } else {
+          await tx.footageSlot.create({
+            data: slotData,
+          });
+        }
+      }
+    });
   } catch (err) {
     console.error("Footage slots save error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });

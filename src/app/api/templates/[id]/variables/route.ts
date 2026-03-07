@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const variableSchema = z.object({
+  id: z.string().uuid().optional(),
   layerName: z.string().min(1),
   effectName: z.string().min(1),
   effectType: z.string().default("Slider"),
@@ -58,19 +59,36 @@ export async function PUT(
   }
 
   try {
-    // Replace all variables for this template
-    await prisma.$transaction([
-      prisma.templateVariable.deleteMany({ where: { templateId: id } }),
-      ...parsed.data.variables.map((v, i) =>
-        prisma.templateVariable.create({
-          data: {
-            ...v,
-            templateId: id,
-            sortOrder: v.sortOrder ?? i,
-          },
-        })
-      ),
-    ]);
+    // Separate existing (have id) from new variables
+    const incoming = parsed.data.variables;
+    const existingIds = incoming.map((v) => v.id).filter(Boolean) as string[];
+
+    await prisma.$transaction(async (tx: typeof prisma) => {
+      // Delete variables that are no longer in the list
+      await tx.templateVariable.deleteMany({
+        where: {
+          templateId: id,
+          id: { notIn: existingIds },
+        },
+      });
+
+      // Upsert each variable to preserve IDs
+      for (let i = 0; i < incoming.length; i++) {
+        const { id: varId, ...data } = incoming[i];
+        const varData = { ...data, templateId: id, sortOrder: data.sortOrder ?? i };
+
+        if (varId) {
+          await tx.templateVariable.update({
+            where: { id: varId },
+            data: varData,
+          });
+        } else {
+          await tx.templateVariable.create({
+            data: varData,
+          });
+        }
+      }
+    });
 
     const variables = await prisma.templateVariable.findMany({
       where: { templateId: id },
