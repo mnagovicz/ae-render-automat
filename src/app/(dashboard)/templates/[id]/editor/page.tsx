@@ -413,12 +413,6 @@ export default function TemplateEditorPage() {
           clientLabel: s.clientLabel || undefined,
         }));
 
-      console.log("Saving footageSlots state:", footageSlots.map((s) => ({
-        footageItemName: s.footageItemName,
-        folderPath: s.folderPath,
-        label: s.label,
-      })));
-
       const [varRes, slotRes, deliveryRes] = await Promise.all([
         fetch(`/api/templates/${id}/variables`, {
           method: "PUT",

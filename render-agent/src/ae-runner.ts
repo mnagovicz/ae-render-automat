@@ -76,6 +76,19 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
         return;
       }
 
+      // Check render_status.txt written by the JSX script
+      const statusFilePath = path.join(path.dirname(outputMp4Path), "render_status.txt");
+      if (fs.existsSync(statusFilePath)) {
+        const statusContent = fs.readFileSync(statusFilePath, "utf-8").trim();
+        const statusLines = statusContent.split("\n");
+        if (statusLines[0] === "FAILED") {
+          const errorMsg = statusLines.slice(1).join("\n") || "Unknown render error";
+          reject(new Error(errorMsg));
+          return;
+        }
+        console.log("[AE Runner] render_status.txt: SUCCESS");
+      }
+
       // Verify output exists
       if (!fs.existsSync(outputMp4Path)) {
         // Give AE a moment to finalize file

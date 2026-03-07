@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "ts-node --watch src/index.ts"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.995.0",
