@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const variableSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.string().optional(),
   layerName: z.string().min(1),
   effectName: z.string().min(1),
   effectType: z.string().default("Slider"),

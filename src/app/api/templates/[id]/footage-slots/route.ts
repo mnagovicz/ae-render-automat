@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const slotSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.string().optional(),
   footageItemName: z.string().min(1),
   folderPath: z.string().default(""),
   label: z.string().min(1),
