@@ -9,6 +9,7 @@ import {
   Layers,
   Building2,
   Server,
+  Users,
   Plus,
   ClipboardCheck,
   Send,
@@ -29,6 +30,7 @@ const navigation = [
   { key: "nav.deliveries", href: "/deliveries", icon: Send, roles: ["ADMIN"] },
   { key: "nav.organizations", href: "/organizations", icon: Building2, roles: ["ADMIN"] },
   { key: "nav.agents", href: "/agents", icon: Server, roles: ["ADMIN"] },
+  { key: "nav.users", href: "/users", icon: Users, roles: ["ADMIN"] },
 ];
 
 export function Sidebar({ userRole }: SidebarProps) {

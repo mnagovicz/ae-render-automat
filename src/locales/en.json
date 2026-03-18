@@ -11,7 +11,6 @@
   "nav.portal": "Overview",
   "nav.portalTemplates": "New Order",
   "nav.portalOrders": "My Orders",
-
   "common.loading": "Loading...",
   "common.name": "Name",
   "common.status": "Status",
@@ -21,7 +20,6 @@
   "common.create": "Create",
   "common.save": "Save",
   "common.user": "User",
-
   "login.title": "AE Render Automat",
   "login.subtitle": "Sign in to your account",
   "login.email": "Email",
@@ -29,7 +27,6 @@
   "login.submit": "Sign In",
   "login.submitting": "Signing in...",
   "login.error": "Invalid email or password",
-
   "dashboard.title": "Dashboard",
   "dashboard.totalJobs": "Total Jobs",
   "dashboard.completed": "Completed",
@@ -38,7 +35,6 @@
   "dashboard.recentJobs": "Recent Jobs",
   "dashboard.noJobs": "No jobs yet.",
   "dashboard.awaitingApproval": "Awaiting Approval",
-
   "jobs.title": "Render Jobs",
   "jobs.newJob": "New Job",
   "jobs.filterByStatus": "Filter by status",
@@ -54,7 +50,6 @@
   "jobs.selectTemplate": "Select a template to create a new render job.",
   "jobs.noActiveTemplates": "No active templates available.",
   "jobs.createJob": "Create Job",
-
   "jobs.detail.template": "Template",
   "jobs.detail.renderFailed": "Render Failed",
   "jobs.detail.retry": "Retry",
@@ -81,13 +76,11 @@
   "jobs.detail.uploadVideo": "Upload finished video",
   "jobs.detail.uploading": "Uploading...",
   "jobs.detail.manualComplete": "Complete",
-
   "jobs.create.title": "Create Render Job",
   "jobs.create.template": "Template",
   "jobs.create.jobSettings": "Job Settings",
   "jobs.create.jobName": "Job Name (optional)",
   "jobs.create.loadingTemplate": "Loading template...",
-
   "templates.title": "Templates",
   "templates.newTemplate": "New Template",
   "templates.createTemplate": "Create Template",
@@ -107,7 +100,6 @@
   "templates.deleteConfirm": "Delete this template?",
   "templates.deleteWithJobsConfirm": "This template has {count} render jobs. After deletion, jobs will remain but lose their template reference. Continue?",
   "templates.allTemplates": "All Templates",
-
   "templates.new.title": "New Template",
   "templates.new.details": "Template Details",
   "templates.new.templateName": "Template Name",
@@ -118,7 +110,6 @@
   "templates.new.uploadHint": "Upload your After Effects project file. You can also upload it later in the editor.",
   "templates.new.creating": "Creating...",
   "templates.new.createAndOpen": "Create Template & Open Editor",
-
   "templates.editor.templateEditor": "Template Editor",
   "templates.editor.saveConfig": "Save Configuration",
   "templates.editor.saving": "Saving...",
@@ -168,7 +159,6 @@
   "templates.editor.allowClientAudioEdit": "Allow client audio editing",
   "templates.editor.voiceId": "Voice ID (ElevenLabs)",
   "templates.editor.noFonts": "No fonts found.",
-
   "orgs.title": "Organizations",
   "orgs.newOrg": "New Organization",
   "orgs.createOrg": "Create Organization",
@@ -182,7 +172,6 @@
   "orgs.deleteOrg": "Delete Organization",
   "orgs.deleteConfirm": "Are you sure you want to delete \"{name}\"? This will also remove all associated templates, render jobs, and member associations. This action cannot be undone.",
   "orgs.loadError": "Failed to load organizations. You may not have permission to view this page.",
-
   "agents.title": "Render Agents",
   "agents.activeAgents": "Active Agents",
   "agents.name": "Name",
@@ -204,7 +193,6 @@
   "agents.deleted": "Agent deleted",
   "agents.deleteConfirm": "Are you sure you want to delete this agent?",
   "agents.close": "Close",
-
   "form.general": "General",
   "form.enable": "Enable",
   "form.images": "Images",
@@ -220,7 +208,6 @@
   "form.generatingPreview": "Generating...",
   "form.voiceoverVolume": "Voiceover volume",
   "form.backgroundVolume": "Background volume",
-
   "status.draft": "Draft",
   "status.awaitingApproval": "Awaiting Approval",
   "status.pending": "Pending",
@@ -234,11 +221,10 @@
   "status.failed": "Failed",
   "status.rejected": "Rejected",
   "status.manual": "Manual",
-
   "toast.jobTakeover": "Job taken over for manual processing",
   "toast.jobTakeoverFailed": "Failed to take over job",
-  "toast.jobApproved": "Job approved",
-  "toast.jobRejected": "Job rejected",
+  "toast.jobApproved": "Order approved",
+  "toast.jobRejected": "Order rejected",
   "toast.jobToManual": "Job moved to manual production",
   "toast.manualVideoUploaded": "Video uploaded and job completed",
   "toast.jobRequeued": "Job re-queued",
@@ -253,9 +239,7 @@
   "toast.orgDeleted": "Organization deleted successfully",
   "toast.uploaded": "Uploaded {name}",
   "toast.uploadAepFirst": "Please upload an AEP file first",
-  "toast.jobApproved": "Order approved",
   "toast.jobApproveFailed": "Failed to approve order",
-  "toast.jobRejected": "Order rejected",
   "toast.jobRejectFailed": "Failed to reject order",
   "toast.orderCreated": "Order submitted successfully",
   "toast.orderCreateFailed": "Failed to submit order",
@@ -263,7 +247,6 @@
   "toast.draftSaveFailed": "Failed to save draft",
   "toast.orderDeleted": "Order deleted",
   "toast.orderDeleteFailed": "Failed to delete order",
-
   "portal.title": "Overview",
   "portal.welcome": "Welcome, {name}",
   "portal.totalOrders": "Total Orders",
@@ -275,12 +258,10 @@
   "portal.recentOrders": "Recent Orders",
   "portal.noOrders": "No orders yet. Start by selecting a template.",
   "portal.newOrder": "New Order",
-
   "portal.templates.title": "Select Template",
   "portal.templates.subtitle": "Choose a template to create a new order.",
   "portal.templates.noTemplates": "No templates available.",
   "portal.templates.select": "Select",
-
   "portal.order.title": "New Order",
   "portal.order.template": "Template",
   "portal.order.jobName": "Spot name",
@@ -294,7 +275,6 @@
   "portal.order.delete": "Delete Order",
   "portal.order.deleteConfirm": "Are you sure you want to delete this order?",
   "portal.order.loadingTemplate": "Loading template...",
-
   "portal.orders.title": "My Orders",
   "portal.orders.noOrders": "No orders found.",
   "portal.orders.order": "Order",
@@ -304,7 +284,6 @@
   "portal.orders.deliveryDestination": "Delivery destination",
   "portal.orders.dueDate": "Production deadline",
   "portal.orders.created": "Created",
-
   "portal.orders.detail.title": "Order Detail",
   "portal.orders.detail.orderInfo": "Order Info",
   "portal.orders.detail.id": "ID",
@@ -315,7 +294,6 @@
   "portal.orders.detail.rejectionReason": "Rejection Reason",
   "portal.orders.detail.downloadVideo": "Download Video",
   "portal.orders.detail.videoPreview": "Video Preview",
-
   "approvals.title": "Pending Approvals",
   "approvals.noApprovals": "No orders awaiting approval.",
   "approvals.order": "Order",
@@ -333,7 +311,6 @@
   "approvals.rejectDialog.reasonPlaceholder": "Enter rejection reason...",
   "approvals.rejectDialog.confirm": "Reject Order",
   "approvals.detail": "Detail",
-
   "deliveries.title": "Delivery Destinations",
   "deliveries.new": "New Destination",
   "deliveries.newDesc": "Add a new delivery destination for sending finished spots.",
@@ -358,11 +335,9 @@
   "deliveries.deliveryDestination": "Delivery Destination",
   "deliveries.selectDestination": "Select delivery destination",
   "deliveries.noDestinations": "No delivery destinations available.",
-
   "templates.editor.delivery": "Delivery",
   "templates.editor.deliveryDesc": "Select delivery destinations available for this template.",
   "templates.editor.noActiveDeliveries": "No active delivery destinations. Create them first in the Delivery section.",
-
   "toast.deliveryCreated": "Delivery destination created",
   "toast.deliveryCreateFailed": "Failed to create delivery destination",
   "toast.deliveryDeleted": "Delivery destination deleted",
@@ -373,7 +348,6 @@
   "toast.deliveryConfigSaveFailed": "Failed to save delivery configuration",
   "toast.wavUploaded": "Background audio uploaded",
   "toast.ttsPreviewFailed": "Failed to generate preview",
-
   "orgDetail.backToOrgs": "Back to Organizations",
   "orgDetail.members": "members",
   "orgDetail.templates": "templates",
@@ -399,5 +373,39 @@
   "orgDetail.copyCredentials": "Copy Credentials",
   "orgDetail.copied": "Copied!",
   "orgDetail.close": "Close",
-  "orgDetail.loadError": "Failed to load organization details."
+  "orgDetail.loadError": "Failed to load organization details.",
+  "nav.users": "Users",
+  "users.title": "Users",
+  "users.addUser": "Add User",
+  "users.noUsers": "No users found",
+  "users.email": "Email",
+  "users.name": "Name",
+  "users.role": "Role",
+  "users.created": "Registered",
+  "users.actions": "Actions",
+  "users.organizations": "Organizations",
+  "users.dialog.title": "Add User",
+  "users.dialog.name": "Name",
+  "users.dialog.namePlaceholder": "John Doe",
+  "users.dialog.email": "Email",
+  "users.dialog.emailPlaceholder": "john@company.com",
+  "users.dialog.password": "Password",
+  "users.dialog.passwordPlaceholder": "Min. 6 characters",
+  "users.dialog.role": "Role",
+  "users.dialog.selectRole": "Select role",
+  "users.dialog.creating": "Creating...",
+  "users.dialog.create": "Create User",
+  "users.changeRole": "Change Role",
+  "users.deleteUser": "Delete User",
+  "users.deleteConfirm": "Are you sure you want to delete this user? This action cannot be undone.",
+  "users.roleDialog.title": "Change Role",
+  "users.roleDialog.selectRole": "Select new role",
+  "users.roleDialog.save": "Save",
+  "users.roleDialog.saving": "Saving...",
+  "toast.userCreated": "User created successfully",
+  "toast.userCreateFailed": "Failed to create user",
+  "toast.userDeleted": "User deleted successfully",
+  "toast.userDeleteFailed": "Failed to delete user",
+  "toast.userUpdated": "User updated successfully",
+  "toast.userUpdateFailed": "Failed to update user"
 }

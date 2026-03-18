@@ -11,7 +11,6 @@
   "nav.portal": "Prehled",
   "nav.portalTemplates": "Nova objednavka",
   "nav.portalOrders": "Moje objednavky",
-
   "common.loading": "Nacitani...",
   "common.name": "Nazev",
   "common.status": "Stav",
@@ -21,7 +20,6 @@
   "common.create": "Vytvorit",
   "common.save": "Ulozit",
   "common.user": "Uzivatel",
-
   "login.title": "AE Render Automat",
   "login.subtitle": "Prihlaste se ke svemu uctu",
   "login.email": "E-mail",
@@ -29,7 +27,6 @@
   "login.submit": "Prihlasit se",
   "login.submitting": "Prihlasovani...",
   "login.error": "Neplatny e-mail nebo heslo",
-
   "dashboard.title": "Prehled",
   "dashboard.totalJobs": "Celkem uloh",
   "dashboard.completed": "Dokonceno",
@@ -38,7 +35,6 @@
   "dashboard.recentJobs": "Posledni ulohy",
   "dashboard.noJobs": "Zatim zadne ulohy.",
   "dashboard.awaitingApproval": "Ceka na zahajeni vyroby",
-
   "jobs.title": "Render ulohy",
   "jobs.newJob": "Nova uloha",
   "jobs.filterByStatus": "Filtrovat dle stavu",
@@ -54,7 +50,6 @@
   "jobs.selectTemplate": "Vyberte sablonu pro vytvoreni nove render ulohy.",
   "jobs.noActiveTemplates": "Zadne aktivni sablony nejsou k dispozici.",
   "jobs.createJob": "Vytvorit ulohu",
-
   "jobs.detail.template": "Sablona",
   "jobs.detail.renderFailed": "Render selhal",
   "jobs.detail.retry": "Opakovat",
@@ -81,13 +76,11 @@
   "jobs.detail.uploadVideo": "Nahrat hotove video",
   "jobs.detail.uploading": "Nahrava se...",
   "jobs.detail.manualComplete": "Dokoncit",
-
   "jobs.create.title": "Vytvorit render ulohu",
   "jobs.create.template": "Sablona",
   "jobs.create.jobSettings": "Nastaveni ulohy",
   "jobs.create.jobName": "Nazev ulohy (volitelne)",
   "jobs.create.loadingTemplate": "Nacitani sablony...",
-
   "templates.title": "Sablony",
   "templates.newTemplate": "Nova sablona",
   "templates.createTemplate": "Vytvorit sablonu",
@@ -107,7 +100,6 @@
   "templates.deleteConfirm": "Smazat tuto sablonu?",
   "templates.deleteWithJobsConfirm": "Tato sablona ma {count} renderovacich jobu. Po smazani sablony joby zustanou, ale ztrati vazbu na sablonu. Opravdu chcete pokracovat?",
   "templates.allTemplates": "Vsechny sablony",
-
   "templates.new.title": "Nova sablona",
   "templates.new.details": "Detaily sablony",
   "templates.new.templateName": "Nazev sablony",
@@ -118,7 +110,6 @@
   "templates.new.uploadHint": "Nahrajte svuj After Effects projektovy soubor. Muzete ho take nahrat pozdeji v editoru.",
   "templates.new.creating": "Vytvari se...",
   "templates.new.createAndOpen": "Vytvorit sablonu a otevrit editor",
-
   "templates.editor.templateEditor": "Editor sablony",
   "templates.editor.saveConfig": "Ulozit konfiguraci",
   "templates.editor.saving": "Uklada se...",
@@ -168,7 +159,6 @@
   "templates.editor.allowClientAudioEdit": "Povolit klientovi upravu audia",
   "templates.editor.voiceId": "Voice ID (ElevenLabs)",
   "templates.editor.noFonts": "Zadne fonty nalezeny.",
-
   "orgs.title": "Organizace",
   "orgs.newOrg": "Nova organizace",
   "orgs.createOrg": "Vytvorit organizaci",
@@ -182,7 +172,6 @@
   "orgs.deleteOrg": "Smazat organizaci",
   "orgs.deleteConfirm": "Opravdu chcete smazat \"{name}\"? Tim se take odstraní vsechny prirazene sablony, render ulohy a clenstvi. Tuto akci nelze vzit zpet.",
   "orgs.loadError": "Nepodarilo se nacist organizace. Nemate opravneni k zobrazeni teto stranky.",
-
   "agents.title": "Render agenti",
   "agents.activeAgents": "Aktivni agenti",
   "agents.name": "Nazev",
@@ -204,7 +193,6 @@
   "agents.deleted": "Agent smazan",
   "agents.deleteConfirm": "Opravdu chcete smazat tohoto agenta?",
   "agents.close": "Zavrit",
-
   "form.general": "Obecne",
   "form.enable": "Zapnout",
   "form.images": "Obrazky",
@@ -220,7 +208,6 @@
   "form.generatingPreview": "Generuje se...",
   "form.voiceoverVolume": "Hlasitost voiceoveru",
   "form.backgroundVolume": "Hlasitost podkresu",
-
   "status.draft": "Koncept",
   "status.awaitingApproval": "Ceka na zahajeni vyroby",
   "status.pending": "Vyrabi se",
@@ -234,11 +221,10 @@
   "status.failed": "Selhalo",
   "status.rejected": "Zamitnuto",
   "status.manual": "Manualni",
-
   "toast.jobTakeover": "Uloha prevzata k manualnimu zpracovani",
   "toast.jobTakeoverFailed": "Nepodarilo se prevzit ulohu",
-  "toast.jobApproved": "Uloha schvalena",
-  "toast.jobRejected": "Uloha odmitnuta",
+  "toast.jobApproved": "Objednavka schvalena",
+  "toast.jobRejected": "Objednavka zamitnuta",
   "toast.jobToManual": "Uloha presunuta na manualni vyrobu",
   "toast.manualVideoUploaded": "Video nahrano a uloha dokoncena",
   "toast.jobRequeued": "Uloha znovu zarazena",
@@ -253,9 +239,7 @@
   "toast.orgDeleted": "Organizace uspesne smazana",
   "toast.uploaded": "Nahrano {name}",
   "toast.uploadAepFirst": "Nejdriv nahrajte AEP soubor",
-  "toast.jobApproved": "Objednavka schvalena",
   "toast.jobApproveFailed": "Nepodarilo se schvalit objednavku",
-  "toast.jobRejected": "Objednavka zamitnuta",
   "toast.jobRejectFailed": "Nepodarilo se zamitnout objednavku",
   "toast.orderCreated": "Objednavka uspesne odeslana",
   "toast.orderCreateFailed": "Nepodarilo se odeslat objednavku",
@@ -263,7 +247,6 @@
   "toast.draftSaveFailed": "Nepodarilo se ulozit koncept",
   "toast.orderDeleted": "Objednavka smazana",
   "toast.orderDeleteFailed": "Nepodarilo se smazat objednavku",
-
   "portal.title": "Prehled",
   "portal.welcome": "Vitejte, {name}",
   "portal.totalOrders": "Celkem objednavek",
@@ -275,12 +258,10 @@
   "portal.recentOrders": "Posledni objednavky",
   "portal.noOrders": "Zatim zadne objednavky. Zacnete vyberem sablony.",
   "portal.newOrder": "Nova objednavka",
-
   "portal.templates.title": "Vyberte sablonu",
   "portal.templates.subtitle": "Zvolte sablonu pro vytvoreni nove objednavky.",
   "portal.templates.noTemplates": "Zadne sablony nejsou k dispozici.",
   "portal.templates.select": "Vybrat",
-
   "portal.order.title": "Nova objednavka",
   "portal.order.template": "Sablona",
   "portal.order.jobName": "Nazev spotu",
@@ -294,7 +275,6 @@
   "portal.order.delete": "Smazat objednavku",
   "portal.order.deleteConfirm": "Opravdu chcete smazat tuto objednavku?",
   "portal.order.loadingTemplate": "Nacitani sablony...",
-
   "portal.orders.title": "Moje objednavky",
   "portal.orders.noOrders": "Zadne objednavky nenalezeny.",
   "portal.orders.order": "Objednavka",
@@ -304,7 +284,6 @@
   "portal.orders.deliveryDestination": "Misto doruceni",
   "portal.orders.dueDate": "Termin vyroby",
   "portal.orders.created": "Vytvoreno",
-
   "portal.orders.detail.title": "Detail objednavky",
   "portal.orders.detail.orderInfo": "Info o objednavce",
   "portal.orders.detail.id": "ID",
@@ -315,7 +294,6 @@
   "portal.orders.detail.rejectionReason": "Duvod zamitnuti",
   "portal.orders.detail.downloadVideo": "Stahnout video",
   "portal.orders.detail.videoPreview": "Nahled videa",
-
   "approvals.title": "Cekajici na zahajeni vyroby",
   "approvals.noApprovals": "Zadne objednavky neckaji na zahajeni vyroby.",
   "approvals.order": "Objednavka",
@@ -333,7 +311,6 @@
   "approvals.rejectDialog.reasonPlaceholder": "Zadejte duvod zamitnuti...",
   "approvals.rejectDialog.confirm": "Zamitnout objednavku",
   "approvals.detail": "Detail",
-
   "deliveries.title": "Mista doruceni",
   "deliveries.new": "Nove misto",
   "deliveries.newDesc": "Pridejte nove misto doruceni pro odesilani hotovych spotu.",
@@ -358,11 +335,9 @@
   "deliveries.deliveryDestination": "Misto doruceni",
   "deliveries.selectDestination": "Vyberte misto doruceni",
   "deliveries.noDestinations": "Zadna mista doruceni nejsou k dispozici.",
-
   "templates.editor.delivery": "Doruceni",
   "templates.editor.deliveryDesc": "Vyberte mista doruceni dostupna pro tuto sablonu.",
   "templates.editor.noActiveDeliveries": "Zadna aktivni mista doruceni. Nejdrive je vytvorte v sekci Doruceni.",
-
   "toast.deliveryCreated": "Misto doruceni vytvoreno",
   "toast.deliveryCreateFailed": "Nepodarilo se vytvorit misto doruceni",
   "toast.deliveryDeleted": "Misto doruceni smazano",
@@ -373,7 +348,6 @@
   "toast.deliveryConfigSaveFailed": "Nepodarilo se ulozit konfiguraci doruceni",
   "toast.wavUploaded": "Zvukovy podkres nahran",
   "toast.ttsPreviewFailed": "Nepodarilo se vygenerovat nahled",
-
   "orgDetail.backToOrgs": "Zpet na organizace",
   "orgDetail.members": "clenu",
   "orgDetail.templates": "sablon",
@@ -399,5 +373,39 @@
   "orgDetail.copyCredentials": "Zkopirovat udaje",
   "orgDetail.copied": "Zkopirovano!",
   "orgDetail.close": "Zavrit",
-  "orgDetail.loadError": "Nepodarilo se nacist detail organizace."
+  "orgDetail.loadError": "Nepodarilo se nacist detail organizace.",
+  "nav.users": "Uživatelé",
+  "users.title": "Uživatelé",
+  "users.addUser": "Přidat uživatele",
+  "users.noUsers": "Žádní uživatelé",
+  "users.email": "E-mail",
+  "users.name": "Jméno",
+  "users.role": "Role",
+  "users.created": "Registrace",
+  "users.actions": "Akce",
+  "users.organizations": "Organizace",
+  "users.dialog.title": "Přidat uživatele",
+  "users.dialog.name": "Jméno",
+  "users.dialog.namePlaceholder": "Jan Novák",
+  "users.dialog.email": "E-mail",
+  "users.dialog.emailPlaceholder": "jan@firma.cz",
+  "users.dialog.password": "Heslo",
+  "users.dialog.passwordPlaceholder": "Min. 6 znaků",
+  "users.dialog.role": "Role",
+  "users.dialog.selectRole": "Vyberte roli",
+  "users.dialog.creating": "Vytváření...",
+  "users.dialog.create": "Vytvořit uživatele",
+  "users.changeRole": "Změnit roli",
+  "users.deleteUser": "Smazat uživatele",
+  "users.deleteConfirm": "Opravdu chcete smazat tohoto uživatele? Tato akce je nevratná.",
+  "users.roleDialog.title": "Změnit roli",
+  "users.roleDialog.selectRole": "Vyberte novou roli",
+  "users.roleDialog.save": "Uložit",
+  "users.roleDialog.saving": "Ukládání...",
+  "toast.userCreated": "Uživatel byl vytvořen",
+  "toast.userCreateFailed": "Nepodařilo se vytvořit uživatele",
+  "toast.userDeleted": "Uživatel byl smazán",
+  "toast.userDeleteFailed": "Nepodařilo se smazat uživatele",
+  "toast.userUpdated": "Uživatel byl aktualizován",
+  "toast.userUpdateFailed": "Nepodařilo se aktualizovat uživatele"
 }
