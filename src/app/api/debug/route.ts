@@ -13,3 +13,4 @@ export async function GET() {
     }, { status: 500 });
   }
 }
+// cache-bust: Wed Mar 18 19:29:29 CET 2026
