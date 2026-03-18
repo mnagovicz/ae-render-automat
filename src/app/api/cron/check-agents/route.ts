@@ -66,7 +66,7 @@ export async function GET() {
       startedAt: { lt: jobTimeoutThreshold },
       // Only reset jobs not already handled by dead agent detection above
       agentId: {
-        notIn: staleAgents.map((a) => a.id),
+        notIn: staleAgents.map((a: { id: string }) => a.id),
       },
     },
     data: {
