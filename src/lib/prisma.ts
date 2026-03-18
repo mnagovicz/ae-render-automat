@@ -5,7 +5,14 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const globalForPrisma = globalThis as unknown as { prisma: any };
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  // RDS requires SSL - use rejectUnauthorized: false for self-signed RDS certificate
+  const ssl = process.env.DATABASE_URL?.includes("rds.amazonaws.com") 
+    ? { rejectUnauthorized: false }
+    : undefined;
+  const adapter = new PrismaPg({ 
+    connectionString: process.env.DATABASE_URL!,
+    ssl,
+  });
   return new (PrismaClient as any)({ adapter });
 }
 
