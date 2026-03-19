@@ -418,5 +418,18 @@
   "users.editDialog.title": "Upravit uživatele",
   "users.editDialog.save": "Uložit",
   "users.dialog.organizations": "Organizace",
-  "users.dialog.noOrgSelected": "Žádná organizace — bude přiřazeno do výchozí."
+  "users.dialog.noOrgSelected": "Žádná organizace — bude přiřazeno do výchozí.",
+  "organizations.title": "Organizace",
+  "organizations.addOrg": "Pridat organizaci",
+  "organizations.name": "Nazev",
+  "organizations.slug": "Slug",
+  "organizations.members": "Clenu",
+  "organizations.templates": "Sablon",
+  "organizations.created": "Vytvoreno",
+  "organizations.actions": "Akce",
+  "organizations.editOrg": "Upravit organizaci",
+  "organizations.deleteOrg": "Smazat organizaci",
+  "organizations.deleteConfirm": "Opravdu chcete smazat tuto organizaci?",
+  "organizations.noOrgs": "Zadne organizace",
+  "organizations.saved": "Organizace ulozena"
 }

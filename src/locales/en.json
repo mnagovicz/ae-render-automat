@@ -418,5 +418,18 @@
   "users.editDialog.title": "Edit User",
   "users.editDialog.save": "Save",
   "users.dialog.organizations": "Organizations",
-  "users.dialog.noOrgSelected": "No organization — will be assigned to default."
+  "users.dialog.noOrgSelected": "No organization — will be assigned to default.",
+  "organizations.title": "Organizations",
+  "organizations.addOrg": "Add Organization",
+  "organizations.name": "Name",
+  "organizations.slug": "Slug",
+  "organizations.members": "Members",
+  "organizations.templates": "Templates",
+  "organizations.created": "Created",
+  "organizations.actions": "Actions",
+  "organizations.editOrg": "Edit Organization",
+  "organizations.deleteOrg": "Delete Organization",
+  "organizations.deleteConfirm": "Are you sure you want to delete this organization?",
+  "organizations.noOrgs": "No organizations",
+  "organizations.saved": "Organization saved"
 }

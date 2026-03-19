@@ -65,8 +65,8 @@ export async function GET(
   return NextResponse.json(organization);
 }
 
-// PUT /api/organizations/[id] - Update an organization
-export async function PUT(
+// PATCH /api/organizations/[id] - Update an organization
+export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -129,7 +129,7 @@ export async function PUT(
     data: parsed.data,
     include: {
       _count: {
-        select: { members: true },
+        select: { members: true, templates: true },
       },
     },
   });
@@ -137,9 +137,17 @@ export async function PUT(
   return NextResponse.json(organization);
 }
 
+// PUT /api/organizations/[id] - Update an organization (alias for PATCH)
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  return PATCH(request, { params });
+}
+
 // DELETE /api/organizations/[id] - Delete an organization
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
@@ -153,15 +161,34 @@ export async function DELETE(
   }
 
   const { id } = await params;
+  const url = new URL(request.url);
+  const force = url.searchParams.get("force") === "true";
 
   const existing = await prisma.organization.findUnique({
     where: { id },
+    include: {
+      _count: {
+        select: { members: true, templates: true },
+      },
+    },
   });
 
   if (!existing) {
     return NextResponse.json(
       { error: "Organization not found" },
       { status: 404 }
+    );
+  }
+
+  // If not force and has members/templates, return warning
+  if (!force && (existing._count.members > 0 || existing._count.templates > 0)) {
+    return NextResponse.json(
+      {
+        error: "Organization has members or templates. Use force=true to delete anyway.",
+        membersCount: existing._count.members,
+        templatesCount: existing._count.templates,
+      },
+      { status: 409 }
     );
   }
 

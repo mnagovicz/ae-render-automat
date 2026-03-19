@@ -31,7 +31,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { members: true },
+        select: { members: true, templates: true },
       },
     },
   });
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     data: { name, slug },
     include: {
       _count: {
-        select: { members: true },
+        select: { members: true, templates: true },
       },
     },
   });
