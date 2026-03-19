@@ -431,5 +431,15 @@
   "organizations.deleteOrg": "Delete Organization",
   "organizations.deleteConfirm": "Are you sure you want to delete this organization?",
   "organizations.noOrgs": "No organizations",
-  "organizations.saved": "Organization saved"
+  "organizations.saved": "Organization saved",
+  "agents.editAgent": "Edit Agent",
+  "agents.deleteAgent": "Delete Agent",
+  "agents.apiKey": "API Key",
+  "agents.regenerateKey": "Regenerate Key",
+  "agents.keyRegenWarning": "The existing agent will stop connecting until you update its .env",
+  "agents.updated": "Agent updated",
+  "agents.save": "Save",
+  "agents.cancel": "Cancel",
+  "agents.showKey": "Show key",
+  "agents.hideKey": "Hide key"
 }

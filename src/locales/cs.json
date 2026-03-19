@@ -431,5 +431,15 @@
   "organizations.deleteOrg": "Smazat organizaci",
   "organizations.deleteConfirm": "Opravdu chcete smazat tuto organizaci?",
   "organizations.noOrgs": "Zadne organizace",
-  "organizations.saved": "Organizace ulozena"
+  "organizations.saved": "Organizace ulozena",
+  "agents.editAgent": "Upravit agenta",
+  "agents.deleteAgent": "Smazat agenta",
+  "agents.apiKey": "API klíč",
+  "agents.regenerateKey": "Regenerovat klíč",
+  "agents.keyRegenWarning": "Stávající agent se přestane připojovat dokud neaktualizujete jeho .env",
+  "agents.updated": "Agent upraven",
+  "agents.save": "Uložit",
+  "agents.cancel": "Zrušit",
+  "agents.showKey": "Zobrazit klíč",
+  "agents.hideKey": "Skrýt klíč"
 }
