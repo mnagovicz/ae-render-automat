@@ -429,7 +429,17 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push("  app.project.renderQueue.render();");
   lines.push('  $.writeln("Render complete.");');
   lines.push("");
-  lines.push("  _success = true;");
+  lines.push("  // Verify output file exists after render");
+  lines.push("  if (outputFile.exists) {");
+  lines.push('    $.writeln("Output verified: " + outputFile.fsName + " (" + outputFile.length + " bytes)");');
+  lines.push("    _success = true;");
+  lines.push("  } else {");
+  lines.push("    // AE may have saved to a different path — check render queue item");
+  lines.push("    var rqItem = app.project.renderQueue.item(app.project.renderQueue.numItems);");
+  lines.push("    var actualOutputPath = rqItem.outputModule(1).file ? rqItem.outputModule(1).file.fsName : 'unknown';");
+  lines.push('    _errorMsg = "Output file not found at: " + outputFile.fsName + " | Actual output: " + actualOutputPath;');
+  lines.push("    _success = false;");
+  lines.push("  }");
   lines.push("");
 
   // ── Error Handling ──
@@ -451,6 +461,7 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push('statusFile.open("w");');
   lines.push("if (_success) {");
   lines.push('  statusFile.writeln("SUCCESS");');
+  lines.push('  statusFile.writeln(outputFile.fsName);');
   lines.push("} else {");
   lines.push('  statusFile.writeln("FAILED");');
   lines.push("  statusFile.writeln(_errorMsg);");
