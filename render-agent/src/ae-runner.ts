@@ -92,7 +92,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       reject(new Error(`After Effects timed out after ${timeoutMs}ms`));
     }, timeoutMs);
 
-    proc.on("close", (code) => {
+    proc.on("close", async (code) => {
       clearTimeout(timeout);
 
       if (code !== 0) {
@@ -110,22 +110,28 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
 
       // Check render_status.txt
       const statusFilePath = path.join(outputDir, "render_status.txt");
+      let actualOutputPath: string | null = null;
+
       if (fs.existsSync(statusFilePath)) {
         const statusContent = fs.readFileSync(statusFilePath, "utf-8").trim();
-        const statusLines = statusContent.split("\n");
-        if (statusLines[0].trim() === "FAILED") {
+        const statusLines = statusContent.split(/\r?\n/);
+        const status = statusLines[0].trim();
+
+        if (status === "FAILED") {
           reject(new Error(statusLines.slice(1).join("\n") || "Unknown render error"));
           return;
         }
-        console.log("[AE Runner] render_status.txt: SUCCESS");
+
+        if (status === "SUCCESS") {
+          // Line 2 contains actual output path written by JSX
+          if (statusLines[1]) {
+            actualOutputPath = statusLines[1].trim();
+            console.log(`[AE Runner] render_status.txt: SUCCESS — output: ${actualOutputPath}`);
+          } else {
+            console.log("[AE Runner] render_status.txt: SUCCESS");
+          }
+        }
       }
-
-      // If MP4 already exists
-      if (fs.existsSync(outputMp4Path)) { resolve(); return; }
-
-      // Find any video file
-      const found = findOutputVideo(outputDir, outputMp4Path);
-      if (found) { convertToMp4(found, outputMp4Path, ffmpegPath, resolve, reject); return; }
 
       // Log output dir contents
       try {
@@ -133,12 +139,56 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
         console.log(`[AE Runner] Output dir contents: ${files.join(", ") || "(empty)"}`);
       } catch {}
 
+      // Check known output path
+      if (fs.existsSync(outputMp4Path)) {
+        console.log(`[AE Runner] MP4 found at expected path`);
+        resolve();
+        return;
+      }
+
+      // Check actual path from JSX (may differ from expected)
+      if (actualOutputPath && fs.existsSync(actualOutputPath)) {
+        console.log(`[AE Runner] Output found at actual path: ${actualOutputPath}`);
+        if (actualOutputPath === outputMp4Path) {
+          resolve();
+        } else {
+          // Copy/convert to expected location
+          const ext = path.extname(actualOutputPath).toLowerCase();
+          if (ext === ".mp4") {
+            fs.copyFileSync(actualOutputPath, outputMp4Path);
+            resolve();
+          } else {
+            convertToMp4(actualOutputPath, outputMp4Path, ffmpegPath, resolve, reject);
+          }
+        }
+        return;
+      }
+
+      // Find any video file in output dir
+      const found = findOutputVideo(outputDir, outputMp4Path);
+      if (found) {
+        const ext = path.extname(found).toLowerCase();
+        if (ext === ".mp4") {
+          fs.copyFileSync(found, outputMp4Path);
+          resolve();
+        } else {
+          convertToMp4(found, outputMp4Path, ffmpegPath, resolve, reject);
+        }
+        return;
+      }
+
       // Wait 3s and retry
       setTimeout(() => {
         if (fs.existsSync(outputMp4Path)) { resolve(); return; }
         const found2 = findOutputVideo(outputDir, outputMp4Path);
         if (found2) {
-          convertToMp4(found2, outputMp4Path, ffmpegPath, resolve, reject);
+          const ext = path.extname(found2).toLowerCase();
+          if (ext === ".mp4") {
+            fs.copyFileSync(found2, outputMp4Path);
+            resolve();
+          } else {
+            convertToMp4(found2, outputMp4Path, ffmpegPath, resolve, reject);
+          }
         } else {
           reject(new Error(`Output file not found: ${outputMp4Path}`));
         }
