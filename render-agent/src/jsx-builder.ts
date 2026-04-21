@@ -132,11 +132,9 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push("app.beginSuppressDialogs();");
   lines.push("");
 
-  // AE 2022+ can't export H.264 directly — render to lossless AVI, ffmpeg converts later
-  const outputAviPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.mxf");
-
+  // AE 2026 supports H.264 directly — output straight to MP4
   // Declare outputFile before try block so it's accessible in cleanup
-  lines.push(`var outputFile = new File("${escapeJsString(normalizePath(outputAviPath))}");`);
+  lines.push(`var outputFile = new File("${escapeJsString(normalizePath(outputMp4Path))}");`);
   lines.push("");
 
   // Wrap everything in a try-catch for error reporting
@@ -390,13 +388,11 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push("");
   lines.push("  // Try preferred templates in order");
   lines.push("  var preferredTemplates = [");
-  lines.push('    "MXF OP1a",');
-  lines.push('    "XDCAM HD 422",');
-  lines.push('    "Lossless",');
-  lines.push('    "Lossless with Alpha",');
-  lines.push('    "AVI (Uncompressed)",');
-  lines.push('    "Animation",');
-  lines.push('    "QuickTime"');
+  lines.push('    "H.264 - Match Render Settings - 15 Mbps",');
+  lines.push('    "H.264 - Match Render Settings - 40 Mbps",');
+  lines.push('    "H.264 - Match Render Settings - 5 Mbps",');
+  lines.push('    "High Quality",');
+  lines.push('    "Lossless"');
   lines.push("  ];");
   lines.push("");
   lines.push("  var templateApplied = false;");
