@@ -22,7 +22,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
   } = options;
 
   // AE 2022+ can't export H.264 directly — agent renders to lossless AVI first
-  const outputAviPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.avi");
+  const outputMxfPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.mxf");
 
   return new Promise((resolve, reject) => {
     console.log(`[AE Runner] Starting After Effects: ${aePath}`);
@@ -86,20 +86,20 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       }
 
       // Look for AVI output (lossless from AE)
-      const aviExists = fs.existsSync(outputAviPath);
+      const mxfExists = fs.existsSync(outputMxfPath);
       const mp4Exists = fs.existsSync(outputMp4Path);
 
-      if (aviExists) {
-        // Convert AVI → MP4 with ffmpeg
-        console.log(`[AE Runner] Converting AVI → MP4 with ffmpeg...`);
+      if (mxfExists) {
+        // Convert MXF → MP4 with ffmpeg
+        console.log(`[AE Runner] Converting MXF → MP4 with ffmpeg...`);
         try {
           execSync(
-            `"${ffmpegPath}" -y -i "${outputAviPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
+            `"${ffmpegPath}" -y -i "${outputMxfPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
             { stdio: "pipe" }
           );
           console.log(`[AE Runner] ffmpeg conversion complete: ${outputMp4Path}`);
           // Clean up AVI
-          try { fs.unlinkSync(outputAviPath); } catch {}
+          try { fs.unlinkSync(outputMxfPath); } catch {}
           resolve();
         } catch (err) {
           reject(new Error(`ffmpeg conversion failed: ${(err as Error).message}`));
@@ -115,14 +115,14 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
 
       // Neither found — wait 2s and retry
       setTimeout(() => {
-        if (fs.existsSync(outputAviPath)) {
-          console.log(`[AE Runner] AVI found after delay, converting...`);
+        if (fs.existsSync(outputMxfPath)) {
+          console.log(`[AE Runner] MXF found after delay, converting...`);
           try {
             execSync(
-              `"${ffmpegPath}" -y -i "${outputAviPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
+              `"${ffmpegPath}" -y -i "${outputMxfPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
               { stdio: "pipe" }
             );
-            try { fs.unlinkSync(outputAviPath); } catch {}
+            try { fs.unlinkSync(outputMxfPath); } catch {}
             resolve();
           } catch (err) {
             reject(new Error(`ffmpeg conversion failed: ${(err as Error).message}`));
@@ -130,7 +130,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
         } else if (fs.existsSync(outputMp4Path)) {
           resolve();
         } else {
-          reject(new Error(`Output file not found: ${outputMp4Path} (also checked ${outputAviPath})`));
+          reject(new Error(`Output file not found: ${outputMp4Path} (also checked ${outputMxfPath})`));
         }
       }, 2000);
     });
