@@ -19,6 +19,7 @@ export async function PATCH(
   if (body.name !== undefined) data.name = body.name.trim();
   if (body.hostname !== undefined) data.hostname = body.hostname?.trim() || null;
   if (body.regenerateKey) data.apiKey = randomUUID();
+  if (body.forceOffline) data.status = "offline";
 
   const agent = await prisma.renderAgent.update({
     where: { id },
