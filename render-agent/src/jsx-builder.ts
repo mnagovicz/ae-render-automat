@@ -133,7 +133,7 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push("");
 
   // AE 2022+ can't export H.264 directly — render to lossless AVI, ffmpeg converts later
-  const outputAviPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.avi");
+  const outputAviPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.mxf");
 
   // Declare outputFile before try block so it's accessible in cleanup
   lines.push(`var outputFile = new File("${escapeJsString(normalizePath(outputAviPath))}");`);
@@ -375,17 +375,18 @@ export function generateJsx(input: JsxGeneratorInput): string {
   );
   lines.push("");
 
-  // ── Configure Output Module — lossless AVI (AE 2022+ dropped H.264 direct export) ──
-  lines.push("  // ── Step 6: Configure output module (lossless AVI for ffmpeg conversion) ──");
+  // ── Configure Output Module — MXF output, ffmpeg converts to MP4 ──
+  lines.push("  // ── Step 6: Configure output module (MXF/lossless for ffmpeg conversion) ──");
   lines.push("  var outputModule = renderItem.outputModule(1);");
   lines.push("");
-  lines.push("  // Try lossless templates in order of preference");
+  lines.push("  // Try MXF and lossless templates in order of preference");
   lines.push("  var losslessTemplates = [");
+  lines.push('    "MXF OP1a",');
+  lines.push('    "XDCAM HD 422",');
   lines.push('    "Lossless",');
   lines.push('    "Lossless with Alpha",');
   lines.push('    "AVI (Uncompressed)",');
-  lines.push('    "Animation",');
-  lines.push('    "PNG Sequence"');
+  lines.push('    "Animation"');
   lines.push("  ];");
   lines.push("");
   lines.push("  var templateApplied = false;");
