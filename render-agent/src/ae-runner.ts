@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -6,6 +6,7 @@ export interface AeRunnerOptions {
   aePath: string;
   jsxFilePath: string;
   outputMp4Path: string;
+  ffmpegPath?: string;
   timeoutMs?: number;
   onProgress?: (progress: number) => void;
 }
@@ -15,9 +16,13 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
     aePath,
     jsxFilePath,
     outputMp4Path,
+    ffmpegPath = "ffmpeg",
     timeoutMs = 600000, // 10 min default
     onProgress,
   } = options;
+
+  // AE 2022+ can't export H.264 directly — agent renders to lossless AVI first
+  const outputAviPath = outputMp4Path.replace(/\.mp4$/i, "_ae_output.avi");
 
   return new Promise((resolve, reject) => {
     console.log(`[AE Runner] Starting After Effects: ${aePath}`);
@@ -25,10 +30,8 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
 
     const args = ["-r", jsxFilePath];
 
-    // Use aerender for headless or afterfx for scripted
     const isAeRender = aePath.toLowerCase().includes("aerender");
     if (isAeRender) {
-      // aerender mode: provide additional args
       args.length = 0;
       args.push("-s", jsxFilePath);
     }
@@ -38,15 +41,12 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       windowsHide: true,
     });
 
-    let stdout = "";
     let stderr = "";
 
     proc.stdout.on("data", (data) => {
       const text = data.toString();
-      stdout += text;
       console.log(`[AE stdout] ${text.trim()}`);
 
-      // Try to parse progress from AE output
       const progressMatch = text.match(/PROGRESS:\s*(\d+)/);
       if (progressMatch && onProgress) {
         onProgress(parseInt(progressMatch[1]));
@@ -68,11 +68,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       clearTimeout(timeout);
 
       if (code !== 0) {
-        reject(
-          new Error(
-            `After Effects exited with code ${code}. stderr: ${stderr}`
-          )
-        );
+        reject(new Error(`After Effects exited with code ${code}. stderr: ${stderr}`));
         return;
       }
 
@@ -81,7 +77,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       if (fs.existsSync(statusFilePath)) {
         const statusContent = fs.readFileSync(statusFilePath, "utf-8").trim();
         const statusLines = statusContent.split("\n");
-        if (statusLines[0] === "FAILED") {
+        if (statusLines[0].trim() === "FAILED") {
           const errorMsg = statusLines.slice(1).join("\n") || "Unknown render error";
           reject(new Error(errorMsg));
           return;
@@ -89,22 +85,54 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
         console.log("[AE Runner] render_status.txt: SUCCESS");
       }
 
-      // Verify output exists
-      if (!fs.existsSync(outputMp4Path)) {
-        // Give AE a moment to finalize file
-        setTimeout(() => {
-          if (fs.existsSync(outputMp4Path)) {
-            resolve();
-          } else {
-            reject(
-              new Error(`Output file not found: ${outputMp4Path}`)
-            );
-          }
-        }, 2000);
+      // Look for AVI output (lossless from AE)
+      const aviExists = fs.existsSync(outputAviPath);
+      const mp4Exists = fs.existsSync(outputMp4Path);
+
+      if (aviExists) {
+        // Convert AVI → MP4 with ffmpeg
+        console.log(`[AE Runner] Converting AVI → MP4 with ffmpeg...`);
+        try {
+          execSync(
+            `"${ffmpegPath}" -y -i "${outputAviPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
+            { stdio: "pipe" }
+          );
+          console.log(`[AE Runner] ffmpeg conversion complete: ${outputMp4Path}`);
+          // Clean up AVI
+          try { fs.unlinkSync(outputAviPath); } catch {}
+          resolve();
+        } catch (err) {
+          reject(new Error(`ffmpeg conversion failed: ${(err as Error).message}`));
+        }
         return;
       }
 
-      resolve();
+      if (mp4Exists) {
+        // AE somehow exported MP4 directly (older version)
+        resolve();
+        return;
+      }
+
+      // Neither found — wait 2s and retry
+      setTimeout(() => {
+        if (fs.existsSync(outputAviPath)) {
+          console.log(`[AE Runner] AVI found after delay, converting...`);
+          try {
+            execSync(
+              `"${ffmpegPath}" -y -i "${outputAviPath}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k "${outputMp4Path}"`,
+              { stdio: "pipe" }
+            );
+            try { fs.unlinkSync(outputAviPath); } catch {}
+            resolve();
+          } catch (err) {
+            reject(new Error(`ffmpeg conversion failed: ${(err as Error).message}`));
+          }
+        } else if (fs.existsSync(outputMp4Path)) {
+          resolve();
+        } else {
+          reject(new Error(`Output file not found: ${outputMp4Path} (also checked ${outputAviPath})`));
+        }
+      }, 2000);
     });
 
     proc.on("error", (err) => {
@@ -112,7 +140,7 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
       reject(new Error(`Failed to start After Effects: ${err.message}`));
     });
 
-    // Simulate progress while waiting (if no progress from AE)
+    // Simulate progress while waiting
     if (onProgress) {
       let simulatedProgress = 10;
       const progressInterval = setInterval(() => {
@@ -121,7 +149,6 @@ export function runAfterEffects(options: AeRunnerOptions): Promise<void> {
           onProgress(simulatedProgress);
         }
       }, 10000);
-
       proc.on("close", () => clearInterval(progressInterval));
     }
   });
