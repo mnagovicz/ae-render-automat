@@ -373,6 +373,16 @@ export function generateJsx(input: JsxGeneratorInput): string {
   );
   lines.push("");
 
+  // ── Disable GPU rendering to avoid GPU3 failure ──
+  lines.push("  // ── Force software rendering (avoid GPU3 failure) ──");
+  lines.push("  try {");
+  lines.push("    app.project.gpuAccelType = GpuAccelType.SOFTWARE;");
+  lines.push('    $.writeln("GPU rendering disabled, using software renderer");');
+  lines.push("  } catch(e) {");
+  lines.push('    $.writeln("Could not set GPU mode: " + e.message);');
+  lines.push("  }");
+  lines.push("");
+
   // ── Configure Output Module — write available templates to file, then pick best ──
   lines.push("  // ── Step 6: Configure output module ──");
   lines.push("  var outputModule = renderItem.outputModule(1);");
@@ -429,15 +439,17 @@ export function generateJsx(input: JsxGeneratorInput): string {
   lines.push("  app.project.renderQueue.render();");
   lines.push('  $.writeln("Render complete.");');
   lines.push("");
+  lines.push("  // Check render queue status after render");
+  lines.push("  var rqStatus = renderItem.status;");
+  lines.push('  $.writeln("Render queue status: " + rqStatus);');
+  lines.push("");
   lines.push("  // Verify output file exists after render");
   lines.push("  if (outputFile.exists) {");
   lines.push('    $.writeln("Output verified: " + outputFile.fsName + " (" + outputFile.length + " bytes)");');
   lines.push("    _success = true;");
   lines.push("  } else {");
-  lines.push("    // AE may have saved to a different path — check render queue item");
-  lines.push("    var rqItem = app.project.renderQueue.item(app.project.renderQueue.numItems);");
-  lines.push("    var actualOutputPath = rqItem.outputModule(1).file ? rqItem.outputModule(1).file.fsName : 'unknown';");
-  lines.push('    _errorMsg = "Output file not found at: " + outputFile.fsName + " | Actual output: " + actualOutputPath;');
+  lines.push("    var actualOutputPath = renderItem.outputModule(1).file ? renderItem.outputModule(1).file.fsName : 'unknown';");
+  lines.push('    _errorMsg = "Output file not found at: " + outputFile.fsName + " | Actual output: " + actualOutputPath + " | RQ status: " + rqStatus;');
   lines.push("    _success = false;");
   lines.push("  }");
   lines.push("");
